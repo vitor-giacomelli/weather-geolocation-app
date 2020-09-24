@@ -9,10 +9,10 @@ function getCurrentWeather() {
 
   navigator.geolocation.getCurrentPosition(success, error);
 
-  function success(position) {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
 
+  function success (currentPosition) {
+    latitude = currentPosition.coords.latitude;
+    longitude = currentPosition.coords.longitude;
     let url =
       api +
       "?lat=" +
@@ -23,17 +23,27 @@ function getCurrentWeather() {
       key +
       "&units=metric";
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        let currentTemperature = data.main.temp;
-        temperature.innerHTML = currentTemperature + "° C";
-        location.innerHTML =
-          data.name + "<br><b> (" + latitude + "°, " + longitude + "°)</b>";
-        description.innerHTML = data.weather[0].main;
-      });
-  }
+      $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          
+          console.log(response);
+          let currentTemperature = response.main.temp;
+          temperature.innerHTML = currentTemperature + "° C";
+          location.innerHTML =
+          response.name + "<br><b> (" + latitude + "°, " + longitude + "°)</b>";
+          description.innerHTML = response.weather[0].main;
+            
+        },
+        error: function (error)
+        {
+          alert(error)
+        }
 
+      })
+  }
   function error() {
     location.innerHTML = "Unable to retrieve your current location";
   }
